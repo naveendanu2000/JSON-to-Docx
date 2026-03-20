@@ -1,0 +1,409 @@
+:root {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  padding: 1%;
+}
+
+/* ── Base Editor ────────────────────────────────────────────── */
+.editor-paragraph {
+  margin: 0 0 8px 0;
+  line-height: 1.75;
+  min-height: 1.7em;
+  padding: 5px 10px;
+}
+
+/* ── Headings ───────────────────────────────────────────────── */
+.editor-heading-h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 1rem 0 0.5rem;
+  padding-bottom: 0.25rem;
+  letter-spacing: -0.03em;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.editor-heading-h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0.9rem 0 0.4rem;
+}
+
+.editor-heading-h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0.8rem 0 0.35rem;
+}
+
+.editor-heading-h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0.7rem 0 0.3rem;
+}
+
+.editor-heading-h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0.6rem 0 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.editor-heading-h6 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0.5rem 0 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+}
+
+/* ── Blockquote ─────────────────────────────────────────────── */
+.editor-quote {
+  margin: 0;
+  padding: 0.5rem 0 0.5rem 1.25rem;
+  border-left: 4px solid #d1d5db;
+  color: #6b7280;
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+/* ── Lists ──────────────────────────────────────────────────── */
+.editor-list-ol {
+  list-style-type: decimal;
+  padding-left: 1.75rem;
+  margin: 0.5rem 0;
+}
+
+.editor-list-ul {
+  list-style-type: disc;
+  padding-left: 1.75rem;
+  margin: 0.5rem 0;
+}
+
+.editor-listItem {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: -0.011em;
+}
+
+.editor-nested-listitem {
+  list-style-type: circle;
+}
+
+/* Checklist */
+.editor-listItemChecked,
+.editor-listItemUnchecked {
+  position: relative;
+  padding-left: 1.75rem;
+  list-style-type: none;
+  cursor: pointer;
+  line-height: 1.75;
+  margin: 0.25rem 0;
+}
+
+.editor-listItemChecked::before,
+.editor-listItemUnchecked::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid #9ca3af;
+  border-radius: 3px;
+  background: #fff;
+}
+
+.editor-listItemChecked::before {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M2 6l3 3 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 10px;
+}
+
+.editor-listItemChecked > span {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+/* ── Inline Text Formats ────────────────────────────────────── */
+.editor-textBold {
+  font-weight: 700;
+}
+
+.editor-textItalic {
+  font-style: italic;
+}
+
+.editor-textUnderline {
+  text-decoration: underline;
+}
+
+.editor-textStrikethrough {
+  text-decoration: line-through;
+}
+
+.editor-textUnderlineStrikethrough {
+  text-decoration: underline line-through;
+}
+
+.editor-textSubscript {
+  font-size: 0.75em;
+  vertical-align: sub;
+}
+
+.editor-textSuperscript {
+  font-size: 0.75em;
+  vertical-align: super;
+}
+
+.editor-textCode {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: #ef4444;
+}
+
+/* ── Hashtag ────────────────────────────────────────────────── */
+.editor-hashtag {
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.editor-hashtag:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ── Image ──────────────────────────────────────────────────── */
+.editor-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+  margin: 0.5rem 0;
+}
+
+/* ── Link ───────────────────────────────────────────────────── */
+.editor-link {
+  color: #3b82f6;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.editor-link:hover {
+  color: #2563eb;
+}
+
+/* ── Code Block ─────────────────────────────────────────────── */
+.editor-code {
+  display: block;
+  margin: 0;
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  background-color: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  tab-size: 2;
+  white-space: pre;
+  position: relative;
+  counter-reset: line;
+}
+
+/* ── Code Highlight Tokens ──────────────────────────────────── */
+.editor-tokenComment {
+  color: #6c7086;
+  font-style: italic;
+}
+
+.editor-tokenProperty {
+  color: #f38ba8;
+}
+
+.editor-tokenAttr {
+  color: #89b4fa;
+}
+
+.editor-tokenSelector {
+  color: #a6e3a1;
+}
+
+.editor-tokenFunction {
+  color: #89dceb;
+}
+
+.editor-tokenVariable {
+  color: #cba6f7;
+}
+
+.editor-tokenOperator {
+  color: #fab387;
+}
+
+.editor-tokenPunctuation {
+  color: #9399b2;
+}
+
+.editor-wrapper {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow-y: auto;
+}
+
+.editor-input {
+  line-height: 1.7;
+  width: 100%;
+  min-height: 100%;
+  outline: none;
+  padding: 12px;
+  box-sizing: border-box;
+  letter-spacing: -0.011em;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.editor-input span[style*="font-size"] {
+  line-height: 1.7;
+}
+
+.editor-placeholder {
+  position: absolute;
+  top: 17px;
+  left: 25px;
+  color: #aaa;
+  pointer-events: none;
+  user-select: none;
+}
+
+body {
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.btn {
+  margin: 20px 0px;
+  padding: 4px 8px;
+  font-size: large;
+  cursor: pointer;
+}
+
+/* ── Mark / Highlight ───────────────────────────────────────── */
+.editor-mark {
+  background-color: #fff176; /* 👈 yellow highlight like Word */
+  border-radius: 2px;
+  padding: 1px 0;
+}
+
+/* stops browser from adding gaps between contenteditable blocks */
+.editor-input > * + * {
+  margin-top: 0 !important;
+}
+
+/* ── Toolbar ────────────────────────────────────────────────── */
+.toolbar {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.toolbar-btn {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600; /* 👈 slightly bold for B I U labels */
+}
+
+.toolbar-dropdown {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* ── Table scrollable wrapper ───────────────────────────────── */
+.editor-tableScrollableWrapper {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+/* ── Table ──────────────────────────────────────────────────── */
+.editor-table {
+  margin: 0.75rem 0;
+  width: 100%;
+  border-collapse: collapse; /* 👈 must be here */
+  table-layout: fixed;
+}
+
+/* ── Target raw elements — guaranteed to work ───────────────── */
+.editor-tableScrollableWrapper table {
+  width: 100%;
+  border-collapse: collapse !important;
+  table-layout: fixed;
+}
+
+.editor-tableScrollableWrapper table td,
+.editor-tableScrollableWrapper table th,
+.editor-tableCell,
+.editor-tableCellHeader {
+  border: 1px solid #000 !important;
+  padding: 8px 12px;
+  min-width: 80px;
+  vertical-align: top;
+  position: relative;
+  outline: none;
+  line-height: 1.7;
+}
+
+/* ── Header cell ────────────────────────────────────────────── */
+.editor-tableScrollableWrapper table th,
+.editor-tableCellHeader {
+  background: #f9fafb;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* ── Selected cell ──────────────────────────────────────────── */
+.editor-tableCellSelected {
+  background: #eff6ff !important;
+  caret-color: #3b82f6;
+}
+
+/* ── Row hover ──────────────────────────────────────────────── */
+.editor-tableScrollableWrapper table tr:hover td {
+  background: #f9fafb;
+}
+
+/* ── Resize handle ──────────────────────────────────────────── */
+.editor-tableCellResizer {
+  position: absolute;
+  right: -3px;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 10;
+}
