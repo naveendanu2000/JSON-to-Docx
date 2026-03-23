@@ -43,6 +43,8 @@ app.get("/getTree", async (req, res) => {
     res.download(filePath, () => {
       fs.unlink(filePath, () => {});
     });
+
+    // res.send(tree);
   } catch (err) {
     console.error("DOCX export error:", err);
     res.status(500).send("Error");

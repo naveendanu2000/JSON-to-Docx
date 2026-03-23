@@ -77,11 +77,11 @@ const PAGE_H = 15840;
 const MARGIN = 1440; // 1 inch
 const CONTENT_W = PAGE_W - MARGIN * 2; // 9360 DXA
 
-const QUILL_SIZES = {
-  "ql-size-small": 18,
-  "ql-size-large": 36,
-  "ql-size-huge": 52,
-};
+// const QUILL_SIZES = {
+//   "ql-size-small": 18,
+//   "ql-size-large": 36,
+//   "ql-size-huge": 52,
+// };
 
 // ─── Inline run helpers ───────────────────────────────────────────────────────
 
@@ -127,11 +127,17 @@ function deriveFmt(tag, cls, style, inherited) {
   if (tag === "s" || tag === "del") f.strike = true;
   if (tag === "sup") f.superScript = true;
   if (tag === "sub") f.subScript = true;
-  for (const [k, v] of Object.entries(QUILL_SIZES))
-    if (cls.includes(k)) f.size = v;
+  // for (const [k, v] of Object.entries(QUILL_SIZES))
+  //   if (cls.includes(k)) f.size = v;
   const bg = style.match(/background-color:\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
   if (bg)
     f.shading = { type: ShadingType.CLEAR, fill: toHex(bg[1], bg[2], bg[3]) };
+
+  const color = style.match(
+    /(?<![^;(\s])color:\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)/,
+  );
+  if (color) f.color = toHex(color[1], color[2], color[3]);
+
   return f;
 }
 
@@ -147,6 +153,7 @@ function makeRun(text, fmt) {
     superScript: fmt.superScript,
     subScript: fmt.subScript,
     shading: fmt.shading,
+    color: fmt.color,
   });
 }
 
