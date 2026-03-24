@@ -1,3 +1,5 @@
+import os from "os";
+import { release } from "./exportQuillToDocx";
 import { Worker } from "worker_threads";
 import path from "path";
 import fs from "fs";
@@ -15,7 +17,6 @@ const pendingQueue = [];
 let activeWorkers = 0;
 const MAX_WORKERS = Math.max(2, (os.cpus?.()?.length ?? 4) - 1); // leave 1 core for main thread
 
-import os from "os";
 
 function drainQueue() {
   while (pendingQueue.length > 0 && activeWorkers < MAX_WORKERS) {
@@ -67,7 +68,7 @@ export function scheduleTTLDelete(filePath, effectiveSize) {
 
 function spawnWorker(sections, jobId) {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(path.join(__dirname, "docxWorker.js"), {
+    const worker = new Worker(path.join(__dirname, "worker.js"), {
       workerData: { jobId, sections },
     });
 

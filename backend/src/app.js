@@ -3,7 +3,7 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
-import { lexicalToDocx } from "./lexicalToDocx.js";
+import { lexicalToDocx } from "../util/lexicalToDocx.js";
 import { data } from "../JSON_data.js";
 import path from "path";
 import { fileURLToPath } from "url";

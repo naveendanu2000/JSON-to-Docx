@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { combineSections } from "../src/combineSections.js";
+import { combineSections } from "./combineSections.js";
 import {
   enqueueWorker,
   scheduleTTLDelete,
@@ -8,7 +8,7 @@ import {
 } from "./worker.js";
 import { release } from "./exportQuillToDocx.js";
 import fs from "fs";
-import { hastToDocx, htmlToJSON } from "../src/htmlTODocx.js";
+import { hastToDocx, htmlToJSON } from "./htmlTODocx.js";
 
 export async function handleSmallFile(req, res, sections, effectiveSize) {
   let converted = false;
