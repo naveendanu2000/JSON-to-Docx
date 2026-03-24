@@ -4,13 +4,11 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import { lexicalToDocx } from "./lexicalToDocx.js";
-import { getJSONFromHTML } from "./test.js";
-import { combineSections } from "./combineSections.js";
-import { hastToDocx } from "./htmlTODocx.js";
 import { data } from "../JSON_data.js";
-import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { acquire, canAccept, estimateSize, getEffectiveSize } from "../util/exportQuillToDocx.js";
+import { handleLargeFile, handleSmallFile } from "../util/DocxExport.js";
 
 const app = express();
 
@@ -28,26 +26,72 @@ app.get("/", (req, res) => {
   res.send("Welcome to JSON_TO_DOC backend!");
 });
 
-app.get("/getTree", async (req, res) => {
+// app.get("/export/quill/docx", async (req, res) => {
+//   try {
+//     const html = combineSections(data);
+//     const tree = getJSONFromHTML(html);
+
+//     const convertedDocxBuffer = await hastToDocx(tree, data.data.sections);
+
+//     // const filePath = path.join(__dirname, `document-${Date.now()}.docx`);
+
+//     // await fs.promises.writeFile(filePath, convertedDocxBuffer);
+
+//     // console.log("Saved at:", filePath);
+//     // res.download(filePath, () => {
+//     //   fs.unlink(filePath, () => {});
+//     // });
+
+//     res.setHeader(
+//       "Content-Type",
+//       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+//     );
+//     res.setHeader(
+//       "Content-Disposition",
+//       'attachment; filename="document.docx"',
+//     );
+
+//     res.end(convertedDocxBuffer);
+//   } catch (err) {
+//     console.error("DOCX export error:", err);
+//     res.status(500).send("Error");
+//   }
+// });
+
+app.get("/export/quill/docx", async (req, res) => {
+  const SMALL_FILE_THRESHOLD = 20 * 1024 * 1024;
   try {
-    const html = combineSections(data);
-    const tree = getJSONFromHTML(html);
+    const sections = data.data.sections; // adapt to your shape
+    if (!sections?.length) {
+      return res.status(400).send("No sections provided");
+    }
 
-    const response = await hastToDocx(tree, data.data.sections);
+    const estimatedSize = estimateSize(sections);
+    const effectiveSize = getEffectiveSize(estimatedSize);
+    const isLarge = estimatedSize >= SMALL_FILE_THRESHOLD;
 
-    const filePath = path.join(__dirname, `document-${Date.now()}.docx`);
+    // ── Capacity check ──
+    if (!canAccept(effectiveSize)) {
+      res.setHeader("Retry-After", "10");
+      return res.status(503).json({
+        error: "Server busy",
+        message: "Export capacity full. Please retry in a few seconds.",
+      });
+    }
 
-    await fs.promises.writeFile(filePath, response);
+    acquire(effectiveSize);
 
-    console.log("Saved at:", filePath);
-    res.download(filePath, () => {
-      fs.unlink(filePath, () => {});
-    });
-
-    // res.send(tree);
+    // ── Route by size ──
+    if (isLarge) {
+      await handleLargeFile(req, res, sections, effectiveSize);
+    } else {
+      await handleSmallFile(req, res, sections, effectiveSize);
+    }
   } catch (err) {
     console.error("DOCX export error:", err);
-    res.status(500).send("Error");
+    if (!res.headersSent) {
+      res.status(500).send("Export failed");
+    }
   }
 });
 
@@ -58,7 +102,7 @@ app.post("/save", (req, res) => {
   res.status(200).send(data);
 });
 
-app.post("/export/docx", async (req, res) => {
+app.post("/export/lexical/docx", async (req, res) => {
   try {
     const { content } = req.body;
 
