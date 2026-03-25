@@ -54,6 +54,7 @@ const {
   LevelFormat,
   UnderlineType,
   ImageRun,
+  TableLayoutType,
 } = require("docx");
 
 // JSZip ships inside docx's own node_modules — no separate install needed.
@@ -303,7 +304,9 @@ function convertTable(tableNode) {
   const colWidths = extractColWidths(tableNode);
   const numCols = colWidths.length || 1;
   const totalDxa = colWidths.length
-    ? colWidths.reduce((a, b) => a + b, 0)
+    ? colWidths.reduce((a, b) => a + b, 0) > CONTENT_W
+      ? CONTENT_W
+      : colWidths.reduce((a, b) => a + b, 0)
     : CONTENT_W;
   const fallback = Math.floor(CONTENT_W / numCols);
   const border = { style: BorderStyle.SINGLE, size: 4, color: "AAAAAA" };
@@ -317,7 +320,13 @@ function convertTable(tableNode) {
 
   return new Table({
     width: { size: totalDxa, type: WidthType.DXA },
-    columnWidths: colWidths.length ? colWidths : Array(numCols).fill(fallback),
+    columnWidths: colWidths.length
+      ? colWidths.reduce((a, b) => a + b, 0) > CONTENT_W
+        ? Array(numCols).fill(fallback)
+        : colWidths
+      : Array(numCols).fill(fallback),
+
+    layout: TableLayoutType.FIXED,
     rows: rows.map(
       (tr) =>
         new TableRow({
@@ -339,7 +348,7 @@ function convertTable(tableNode) {
               return new TableCell({
                 borders,
                 width: { size: colWidths[ci] ?? fallback, type: WidthType.DXA },
-                margins: { top: 80, bottom: 80, left: 120, right: 120 },
+                margins: { top: 80, bottom: 80, left: 80, right: 80 },
                 shading: { type: ShadingType.CLEAR, fill: "FFFFFF" },
                 children: [new Paragraph({ children: runs })],
               });
