@@ -4,7 +4,7 @@
 
 const MAX_CAPACITY = 200 * 1024 * 1024; // 200 MB total
 const MEMORY_MULTIPLIER = 3;
-const SMALL_FILE_THRESHOLD = 20 * 1024 * 1024; // 20 MB
+const SMALL_FILE_THRESHOLD = 2 * 1024 * 1024; // 2 MB
 
 let currentUsage = 0;
 
