@@ -1,4 +1,3 @@
-// workerManager.js
 // Manages the worker thread pool, file streaming, and TTL cleanup.
 // Does NOT contain any capacity logic — import from capacityStore.js for that.
 

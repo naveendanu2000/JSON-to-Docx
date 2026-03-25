@@ -51,7 +51,7 @@ function App(): React.ReactElement {
     setIsExporting(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:3000/export/docx", {
+      const response = await fetch("http://localhost:3000/export/lexical/docx", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: json }),

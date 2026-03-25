@@ -11,7 +11,7 @@ import {
   canAccept,
   acquire,
   isSmallFile,
-} from "./capacityStore.js";
+} from "../util/capacityStore.js";
 import { handleLargeFile, handleSmallFile } from "../util/DocxExport.js";
 
 const app = express();
@@ -61,7 +61,6 @@ app.get("/", (req, res) => {
 
 app.get("/export/quill/docx", async (req, res) => {
   try {
-    // Adapt this to wherever your sections live on the request
     const sections = data.data.sections;
 
     if (!sections?.length) {
@@ -71,7 +70,6 @@ app.get("/export/quill/docx", async (req, res) => {
     const estimatedSize = estimateSize(sections);
     const effectiveSize = getEffectiveSize(estimatedSize);
 
-    // ── Capacity gate ──────────────────────────────────────────────────────
     if (!canAccept(effectiveSize)) {
       res.setHeader("Retry-After", "10");
       return res.status(503).json({
@@ -82,7 +80,6 @@ app.get("/export/quill/docx", async (req, res) => {
 
     acquire(effectiveSize);
 
-    // ── Route by estimated size ────────────────────────────────────────────
     if (isSmallFile(estimatedSize)) {
       await handleSmallFile(req, res, sections, effectiveSize);
     } else {

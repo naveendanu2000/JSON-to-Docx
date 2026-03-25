@@ -1,3 +1,5 @@
+// Converts the content data into one HTML string
+
 export const combineSections = (data) => {
   return data.data.sections
     .map(

@@ -1,6 +1,4 @@
-// docxWorker.js
 // Worker thread entry point. Receives section data, converts to docx, saves to disk.
-// Must NOT import from workerManager.js — that would be circular
 // (workerManager spawns this file via new Worker()).
 
 import { workerData, parentPort } from "worker_threads";

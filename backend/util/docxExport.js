@@ -1,4 +1,3 @@
-// docxExport.js
 // Route handler functions for small and large file paths.
 
 import crypto from "crypto";

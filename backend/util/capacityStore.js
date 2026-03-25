@@ -1,5 +1,3 @@
-// capacityStore.js
-// Single source of truth for the weighted capacity pool.
 // Imported by both exportQuillToDocx.js and worker.js so they share state.
 
 const MAX_CAPACITY = 200 * 1024 * 1024; // 200 MB total
