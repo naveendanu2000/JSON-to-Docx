@@ -5,15 +5,16 @@ import express from "express";
 import cors from "cors";
 import { lexicalToDocx } from "../util/lexicalToDocx.js";
 import { data } from "../JSON_data.js";
-import path from "path";
-import { fileURLToPath } from "url";
-import { acquire, canAccept, estimateSize, getEffectiveSize } from "../util/exportQuillToDocx.js";
+import {
+  estimateSize,
+  getEffectiveSize,
+  canAccept,
+  acquire,
+  isSmallFile,
+} from "./capacityStore.js";
 import { handleLargeFile, handleSmallFile } from "../util/DocxExport.js";
 
 const app = express();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
@@ -59,18 +60,18 @@ app.get("/", (req, res) => {
 // });
 
 app.get("/export/quill/docx", async (req, res) => {
-  const SMALL_FILE_THRESHOLD = 20 * 1024 * 1024;
   try {
-    const sections = data.data.sections; // adapt to your shape
+    // Adapt this to wherever your sections live on the request
+    const sections = data.data.sections;
+
     if (!sections?.length) {
       return res.status(400).send("No sections provided");
     }
 
     const estimatedSize = estimateSize(sections);
     const effectiveSize = getEffectiveSize(estimatedSize);
-    const isLarge = estimatedSize >= SMALL_FILE_THRESHOLD;
 
-    // ── Capacity check ──
+    // ── Capacity gate ──────────────────────────────────────────────────────
     if (!canAccept(effectiveSize)) {
       res.setHeader("Retry-After", "10");
       return res.status(503).json({
@@ -81,11 +82,11 @@ app.get("/export/quill/docx", async (req, res) => {
 
     acquire(effectiveSize);
 
-    // ── Route by size ──
-    if (isLarge) {
-      await handleLargeFile(req, res, sections, effectiveSize);
-    } else {
+    // ── Route by estimated size ────────────────────────────────────────────
+    if (isSmallFile(estimatedSize)) {
       await handleSmallFile(req, res, sections, effectiveSize);
+    } else {
+      await handleLargeFile(req, res, sections, effectiveSize);
     }
   } catch (err) {
     console.error("DOCX export error:", err);
