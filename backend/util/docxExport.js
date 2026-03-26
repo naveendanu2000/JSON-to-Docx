@@ -3,7 +3,6 @@
 import crypto from "crypto";
 import fs from "fs";
 import { combineSections } from "./combineSections.js";
-import { htmlToJSON, hastToDocx } from "./htmlToDocx.js";
 import { release } from "./capacityStore.js";
 import {
   enqueueWorker,
@@ -11,6 +10,7 @@ import {
   sendDocxHeaders,
   streamFileAndDelete,
 } from "./workerManager.js";
+import { hastToDocx, htmlToJSON } from "./htmlTODocx.js";
 
 // ─── Small file path ──────────────────────────────────────────────────────────
 // Runs entirely on the main thread. No disk I/O — buffer sent directly.
@@ -19,6 +19,7 @@ export async function handleSmallFile(req, res, sections, effectiveSize) {
   try {
     const html = combineSections({ data: { sections } });
     const tree = htmlToJSON(html);
+    // res.send(tree);
     const buffer = await hastToDocx(tree, sections);
 
     sendDocxHeaders(res);

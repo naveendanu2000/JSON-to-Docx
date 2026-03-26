@@ -262,7 +262,8 @@ function convertNode(node) {
     case "ul":
       return (node.children ?? [])
         .filter((n) => n.type === "element" && n.tagName === "li")
-        .map(liPara);
+        .map((li) => liPara(li, 0))
+        .flat();
 
     case "table":
       return [convertTable(node)];
@@ -284,20 +285,39 @@ function hPara(node, level) {
   });
 }
 
-function liPara(li) {
+function liPara(li, level = 0) {
   const ref =
     li.properties?.dataList === "ordered" ? "myNumbering" : "myBullets";
-  const content = (li.children ?? []).filter(
+
+  const children = li.children ?? [];
+  const result = [];
+
+  const inlineContent = children.filter(
     (n) =>
-      !(
-        n.type === "element" &&
-        (n.properties?.className ?? []).includes("ql-ui")
-      ),
+      !(n.type === "element" && (n.tagName === "ul" || n.tagName === "ol")),
   );
-  return new Paragraph({
-    numbering: { reference: ref, level: 0 },
-    children: collectRuns(content),
+
+  result.push(
+    new Paragraph({
+      numbering: { reference: ref, level },
+      children: collectRuns(inlineContent),
+    }),
+  );
+
+  children.forEach((child) => {
+    if (
+      child.type === "element" &&
+      (child.tagName === "ul" || child.tagName === "ol")
+    ) {
+      const nestedItems = (child.children ?? [])
+        .filter((n) => n.type === "element" && n.tagName === "li")
+        .map((nestedLi) => liPara(nestedLi, level + 1));
+
+      result.push(...nestedItems.flat());
+    }
   });
+
+  return result;
 }
 
 function convertTable(tableNode) {
@@ -402,27 +422,47 @@ function buildBaseDoc(hastRoot) {
       config: [
         {
           reference: "myBullets",
-          levels: [
-            {
-              level: 0,
-              format: LevelFormat.BULLET,
-              text: "\u2022",
-              alignment: AlignmentType.LEFT,
-              style: { paragraph: { indent: { left: 720, hanging: 360 } } },
+          levels: [0, 1, 2, 3, 4, 5, 6, 7, 8].map((level) => ({
+            level,
+            format: LevelFormat.BULLET,
+            text: ["•", "◦", "▪", "▸", "–", "·", "»", "›", "‣"][level],
+            alignment: AlignmentType.LEFT,
+            style: {
+              paragraph: {
+                indent: {
+                  left: 720 * (level + 1),
+                  hanging: 360,
+                },
+              },
             },
-          ],
+          })),
         },
         {
           reference: "myNumbering",
-          levels: [
-            {
-              level: 0,
-              format: LevelFormat.DECIMAL,
-              text: "%1.",
-              alignment: AlignmentType.LEFT,
-              style: { paragraph: { indent: { left: 720, hanging: 360 } } },
+          levels: [0, 1, 2, 3, 4, 5, 6, 7, 8].map((level) => ({
+            level,
+            format: [
+              LevelFormat.DECIMAL,
+              LevelFormat.LOWER_LETTER,
+              LevelFormat.LOWER_ROMAN,
+              LevelFormat.DECIMAL,
+              LevelFormat.LOWER_LETTER,
+              LevelFormat.LOWER_ROMAN,
+              LevelFormat.DECIMAL,
+              LevelFormat.LOWER_LETTER,
+              LevelFormat.LOWER_ROMAN,
+            ][level],
+            text: `%${level + 1}.`,
+            alignment: AlignmentType.LEFT,
+            style: {
+              paragraph: {
+                indent: {
+                  left: 720 * (level + 1),
+                  hanging: 360,
+                },
+              },
             },
-          ],
+          })),
         },
       ],
     },
