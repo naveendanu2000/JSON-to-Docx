@@ -16,6 +16,11 @@ import { ToolbarPlugin } from "./ToolbarPlugin";
 import { OnChangePlugin } from "./OnChangePlugin";
 import { MarkNode } from "@lexical/mark";
 import { theme } from "./theme";
+import { TrackChangePlugin } from "./TrackChangePlugin";
+import InsertNode from "./helpers/InsertNode";
+import DeleteNode from "./helpers/DeleteNode";
+import InsertOriginalNode from "./helpers/InsertOriginalNode";
+import "./TrackChanges.css";
 
 function onError(error: Error) {
   console.error(error);
@@ -36,6 +41,9 @@ function App(): React.ReactElement {
       QuoteNode,
       ListNode,
       ListItemNode,
+      InsertNode,
+      InsertOriginalNode,
+      DeleteNode,
       MarkNode,
       TableNode,
       TableCellNode,
@@ -51,11 +59,14 @@ function App(): React.ReactElement {
     setIsExporting(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:3000/export/lexical/docx", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: json }),
-      });
+      const response = await fetch(
+        "http://localhost:3000/export/lexical/docx",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: json }),
+        },
+      );
 
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
@@ -129,6 +140,7 @@ function App(): React.ReactElement {
       <HistoryPlugin />
       <AutoFocusPlugin />
       <ListPlugin />
+      <TrackChangePlugin />
       <TabIndentationPlugin />
       <TablePlugin />
       <OnChangePlugin onChange={handleChange} />

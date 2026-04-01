@@ -407,3 +407,8 @@ body {
   cursor: col-resize;
   z-index: 10;
 }
+
+.editor-delete {
+  color: red;
+  text-decoration: line-through;
+}

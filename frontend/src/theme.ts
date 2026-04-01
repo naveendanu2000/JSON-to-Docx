@@ -1,4 +1,7 @@
 export const theme = {
+  delete: "editor-delete", // ← This applies red strikethrough styling
+  insert: "editor-insert",
+  insertOriginal: "editor-insert-original",
   paragraph: "editor-paragraph",
   quote: "editor-quote",
   heading: {

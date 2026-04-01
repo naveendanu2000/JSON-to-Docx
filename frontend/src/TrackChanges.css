@@ -1,0 +1,59 @@
+/* Styles for Track Changes - Delete Nodes */
+
+/* Red strikethrough for deleted text */
+.editor-delete {
+  color: #dc2626; /* Red color */
+  text-decoration: line-through;
+  background-color: #fee2e2; /* Light red background (optional) */
+  /* padding: 0 2px; Small padding for better visibility (optional) */
+  border-radius: 2px; /* Slight rounding (optional) */
+}
+
+/* Optional: Darker red on hover to make it more interactive */
+.editor-delete:hover {
+  background-color: #fecaca;
+  cursor: pointer;
+}
+
+/* Styles for Insert Nodes (green for new content) */
+.editor-insert {
+  color: #16a34a; /* Green color */
+  text-decoration: underline;
+  background-color: #dcfce7; /* Light green background (optional) */
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* Styles for Insert Original Nodes (retained/original content) */
+.editor-insert-original {
+  /* No special styling - appears as normal text */
+  color: inherit;
+}
+
+/* Alternative styling options - uncomment if preferred */
+
+/*
+// More subtle delete styling
+.editor-delete {
+  color: #b91c1c;
+  text-decoration: line-through;
+}
+*/
+
+/*
+// Bold strikethrough for more emphasis
+.editor-delete {
+  color: #dc2626;
+  text-decoration: line-through;
+  font-weight: 600;
+}
+*/
+
+/*
+// Double strikethrough effect
+.editor-delete {
+  color: #dc2626;
+  text-decoration: line-through;
+  text-decoration-style: double;
+}
+*/
