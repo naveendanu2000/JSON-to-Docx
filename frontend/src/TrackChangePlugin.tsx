@@ -17,6 +17,8 @@ import {
   KEY_DOWN_COMMAND,
   LexicalNode,
   RangeSelection,
+  REDO_COMMAND,
+  UNDO_COMMAND,
 } from "lexical";
 import { $createInsertNode } from "./helpers/InsertNode";
 import { $createDeleteNode } from "./helpers/DeleteNode";
@@ -39,7 +41,7 @@ function mergeDelete(selection: RangeSelection) {
     if (!$isRangeSelection(currentSelection)) return;
 
     const selectedNodes = currentSelection.getNodes();
-    
+
     // merge all the delete nodes that are next to each other within the nodes that are currently selected
     for (const currentNode of selectedNodes) {
       if (currentNode.__type == "paragraph") {
@@ -374,7 +376,11 @@ export function handleSelection(data: string | null) {
 }
 
 function handleInsertFromDiff(
-  data: { word: string; type: "retained" | "inserted" | "deleted"; created_by: string }[],
+  data: {
+    word: string;
+    type: "retained" | "inserted" | "deleted";
+    created_by: string;
+  }[],
 ) {
   const selection = $getSelection();
 
@@ -593,19 +599,19 @@ function handleDelete() {
           if (prevSibling) {
             parentInsertNode.remove();
             // FIXED: Check if select method exists
-            if (typeof prevSibling.select === 'function') {
+            if (typeof prevSibling.select === "function") {
               prevSibling.select();
             } else {
               // If prevSibling doesn't have select method, try selecting its last descendant
               const lastDesc = prevSibling.getLastDescendant?.();
-              if (lastDesc && typeof lastDesc.select === 'function') {
+              if (lastDesc && typeof lastDesc.select === "function") {
                 lastDesc.select();
               }
             }
           } else {
             const parentParaNode = parentInsertNode.getParent();
             parentInsertNode.remove();
-            if (parentParaNode && typeof parentParaNode.select === 'function') {
+            if (parentParaNode && typeof parentParaNode.select === "function") {
               parentParaNode.select();
             }
           }
@@ -629,11 +635,11 @@ function handleDelete() {
           const prevSibling = parentInsertNode.getPreviousSibling();
           if (prevSibling) {
             // FIXED: Check if select method exists
-            if (typeof prevSibling.select === 'function') {
+            if (typeof prevSibling.select === "function") {
               prevSibling.select();
             } else {
               const lastDesc = prevSibling.getLastDescendant?.();
-              if (lastDesc && typeof lastDesc.select === 'function') {
+              if (lastDesc && typeof lastDesc.select === "function") {
                 lastDesc.select();
               }
             }
@@ -660,11 +666,11 @@ function handleDelete() {
       const prevSibling = parentDeleteNode.getPreviousSibling();
       if (prevSibling) {
         // FIXED: Check if select method exists
-        if (typeof prevSibling.select === 'function') {
+        if (typeof prevSibling.select === "function") {
           prevSibling.select();
         } else {
           const lastDesc = prevSibling.getLastDescendant?.();
-          if (lastDesc && typeof lastDesc.select === 'function') {
+          if (lastDesc && typeof lastDesc.select === "function") {
             lastDesc.select();
           }
         }
@@ -735,18 +741,52 @@ export function TrackChangePlugin() {
   }, [editor]);
 
   // Overide any keypress operation
+  // editor.registerCommand(
+  //   KEY_DOWN_COMMAND,
+  //   (event) => {
+  //     const regex = /^[a-zA-Z0-9\s`~!@#$%^&*()_+={}\[\]:;"'<>,.?/|\\-]$/;
+  //     if (!regex.test(event.key)) {
+  //       // to ignore key press events like Enter, Left Arrow, Right Arrow etc
+  //       return false;
+  //     }
+  //     event.preventDefault();
+  //     return handleInsert(event.key);
+  //   },
+  //   COMMAND_PRIORITY_LOW,
+  // );
   editor.registerCommand(
     KEY_DOWN_COMMAND,
     (event) => {
+      const isCtrl = event.ctrlKey || event.metaKey;
+
+      // ✅ Handle Undo (Ctrl + Z)
+      if (isCtrl && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        editor.dispatchCommand(UNDO_COMMAND, undefined);
+        return true;
+      }
+
+      // ✅ Handle Redo (Ctrl + Y or Ctrl + Shift + Z)
+      if (
+        (isCtrl && event.key.toLowerCase() === "y") ||
+        (isCtrl && event.shiftKey && event.key.toLowerCase() === "z")
+      ) {
+        event.preventDefault();
+        editor.dispatchCommand(REDO_COMMAND, undefined);
+        return true;
+      }
+
+      // Your existing typing logic
       const regex = /^[a-zA-Z0-9\s`~!@#$%^&*()_+={}\[\]:;"'<>,.?/|\\-]$/;
+
       if (!regex.test(event.key)) {
-        // to ignore key press events like Enter, Left Arrow, Right Arrow etc
         return false;
       }
+
       event.preventDefault();
       return handleInsert(event.key);
     },
-    COMMAND_PRIORITY_LOW,
+    COMMAND_PRIORITY_HIGH,
   );
 
   // Override backspace keypress operation
